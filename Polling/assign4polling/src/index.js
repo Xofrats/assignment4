@@ -1,31 +1,40 @@
 import ReactDOM from 'react-dom';
+import { get_model } from './model'
 import './index.css';
-import model from './model.js'
-import view from './view.js'
-import store from './store.js'
-import dispatcher from './dispatcher.js'
-import dispatcher_server from './dispatcher_polling';
+import { create_view } from './view'
+import { reduce } from './reducer'
+import { dispatcher_server } from './dispatcher_polling';
 
-async function init() {
-  try {
-    const weather_res = await fetch('http://localhost:8080/data')
-    const weather = await weather_res.json()
-    const forecast = await fetch('http://localhost:8080/forecast').then(res => res.json())
-    const warning = await fetch('http://localhost:8080/warnings').then(res => res.json())
-    console.log("Warnings!")
-console.log(warning)
-    const theModel = model(weather, forecast, warning.warnings)
+import { ajax } from 'rxjs/ajax'
+import { Subject } from 'rxjs'
+import { map, mergeMap, scan } from 'rxjs/operators'
+
+// async function init() {
+//   try {
+// const weather_res = await fetch('http://localhost:8080/data')
+// const weather = await weather_res.json()
+// const forecast = await fetch('http://localhost:8080/forecast').then(res => res.json())
+// const warnings = await fetch('http://localhost:8080/warnings').then(res => res.json())
+// const theModel = model(weather, forecast, warnings.warnings)
+
+ajax.getJSON('http://localhost:8080/Warnings')
+  .subscribe(warnings => {
+
+    console.log(warnings.warnings)
+
+    const actions = new Subject()
+    const dispatch = action => actions.next(action)
+
     let renderer = dom => ReactDOM.render(dom, document.getElementById('root'))
-    let theDispatcher
-    let theServerDispatcher
-    const theView = view(() => theDispatcher)
-    const theStore = store(theModel, theView, renderer)
-    theDispatcher = dispatcher(theStore)
-    theServerDispatcher = dispatcher_server(theDispatcher)
-    renderer(theView(theModel))
-  } catch (err) {
-    console.log(err)
-  }
-}
 
-init()
+    const theView = create_view(dispatch)
+    const init_state = get_model({ warnings })
+
+    renderer(theView(init_state))
+
+    actions
+      .pipe(mergeMap(dispatcher_server))
+      .pipe(scan(reduce, init_state))
+      .pipe(map(theView))
+      .subscribe(renderer)
+  })
