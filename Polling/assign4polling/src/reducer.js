@@ -11,7 +11,7 @@ async function init() {
 
 export function reduce(model, action) {
 
-    
+    const { weather} = action
     switch (action.type) {
             case 'polling':
             console.log("In reducer")
@@ -21,7 +21,7 @@ export function reduce(model, action) {
             case 'keepUpdating':
             console.log("In keepUpdating")
             init()
-            console.log(warnings)
+            console.log(weather)
             return get_warnings(warnings, action)
             
         default:

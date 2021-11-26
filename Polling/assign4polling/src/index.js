@@ -11,21 +11,15 @@ import { map, mergeMap, scan } from 'rxjs/operators'
 
 
 let init_warnings = {}
-
  async function init() {
    try {
-// const weather_res = await fetch('http://localhost:8080/data')
-// const weather = await weather_res.json()
-// const forecast = await fetch('http://localhost:8080/forecast').then(res => res.json())
-// const warnings = await fetch('http://localhost:8080/warnings').then(res => res.json())
-// const theModel = model(weather, forecast, warnings.warnings)
 init_warnings = await fetch('http://localhost:8080/warnings').then(res => res.json())
-
    }
 catch (err) {
   console.log(err)
 }
  }
+ 
 init()
 
 ajax.getJSON('http://localhost:8080/Warnings')
