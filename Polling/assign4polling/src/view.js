@@ -20,8 +20,10 @@ const WarningRow = (props) => (
 const WarningDataBody = ({ model }) => (
     <tbody>
         {
-            model.Warning().map(warning => <WarningRow key={warning.id.toString()} {...{ warning }} />)
+            
+         model.Warning().map(warning => <WarningRow key={warning.id.toString()} {...{ warning }} />)
         }
+
     </tbody>
 )
 
@@ -299,25 +301,53 @@ const HourlyPredictionWeatherDataBody = ({ model, dispatcher }) => (
 // )
 
 
-const game_list_view = dispatch => () =>
+// const game_list_view = dispatch => (warnings) =>
+//     <div>
+//         <h1>Warnings</h1>
+//         <button id='polling'
+//             onClick={() => dispatch({ type: "polling" })}>
+//             polling
+//         </button>
+//         {console.log(warnings)}
+//     </div>
+
+const game_view = dispatch => ({warnings, newModel }) =>
     <div>
-        <h1>Warnings</h1>
-        <button id='polling'
+       <button id='polling'
             onClick={() => dispatch({ type: "polling" })}>
             polling
         </button>
 
+        <h1>Warnings</h1>
+        <table id='weather'>
+            <thead>
+                <tr>
+                    <td>severity</td>
+                    <td>from</td>
+                    <td>to</td>
+                    <td>type</td>
+                    <td>Unit</td>
+                    <td>Time</td>
+                    <td>Place</td>
+                </tr>
+            </thead>
+            <WarningDataBody model={newModel} />
+            </table>
     </div>
 
-const game_view = dispatch => ({ game, player }) => 
-<div> 
-      <h1>Tic-tac-toe</h1>
-</div>
+const game_list_view = dispatch => ({ newModel }) =>
+    <div>
+       <button id='polling'
+            onClick={() => dispatch({ type: "polling" })}>
+            se data
+        </button>
+    </div>
 
-    const View = ({ model, dispatch }) => model.accept({
-        visit_pre_game: game_list_view(dispatch),
-        visit_game: game_view(dispatch)
-      })
+const View = ({ model, dispatch }) => model.accept({
+    visit_pre_game: game_list_view(dispatch),
+    warning_list: game_view(dispatch),
+    visit_game: game_view(dispatch)
+})
 
 
 

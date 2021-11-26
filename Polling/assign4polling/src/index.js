@@ -9,13 +9,24 @@ import { ajax } from 'rxjs/ajax'
 import { Subject } from 'rxjs'
 import { map, mergeMap, scan } from 'rxjs/operators'
 
-// async function init() {
-//   try {
+
+let init_warnings = {}
+
+ async function init() {
+   try {
 // const weather_res = await fetch('http://localhost:8080/data')
 // const weather = await weather_res.json()
 // const forecast = await fetch('http://localhost:8080/forecast').then(res => res.json())
 // const warnings = await fetch('http://localhost:8080/warnings').then(res => res.json())
 // const theModel = model(weather, forecast, warnings.warnings)
+init_warnings = await fetch('http://localhost:8080/warnings').then(res => res.json())
+
+   }
+catch (err) {
+  console.log(err)
+}
+ }
+init()
 
 ajax.getJSON('http://localhost:8080/Warnings')
   .subscribe(warnings => {
@@ -28,7 +39,8 @@ ajax.getJSON('http://localhost:8080/Warnings')
     let renderer = dom => ReactDOM.render(dom, document.getElementById('root'))
 
     const theView = create_view(dispatch)
-    const init_state = get_model({ warnings })
+
+    const init_state = get_model({ init_warnings })
 
     renderer(theView(init_state))
 
