@@ -17,8 +17,6 @@ export function game_state({ init_warnings }) {
 }
 
 export function get_warnings({ warnings }) {
-    console.log("IN MODEL")
-    console.log(warnings)
     let newModel = model(warnings)
     return {
         newModel,
@@ -27,6 +25,7 @@ export function get_warnings({ warnings }) {
 }
 
 export function get_model({ init_warnings }) {
+    console.log("IN MODEL")
     let newModel = model(init_warnings.warnings)
     return {
         init_warnings, newModel,
